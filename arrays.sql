@@ -12,14 +12,14 @@ $function$
 
 ----
 
-CREATE FUNCTION public.array_sort_and_unique(_arrayval anyarray, _arraykey integer[])
+CREATE FUNCTION public.array_sort_and_unique(_arrayval anyarray, _arraykey integer[]) --TODO biginterger plutot ?
  RETURNS anyarray
  LANGUAGE sql
  IMMUTABLE STRICT
 AS $function$
 	--trier le tableau 1 avec les clés (int) présentes dans le tableaux 2. Supprime les doublons (garde la clé la plus petite).
 	--Exemple d'utilisation : lors d'une aggregation spatiale, formatage des noms d'observateur du plus récent au plus ancien ( -1*(epoch/1000) pour la clé)
- --_arrayval : array_agg(identobs) ; _arraykey : arrayg_agg(date_obs)
+ 	--_arrayval : array_agg(identobs) ; _arraykey : arrayg_agg(-1*(epoch/1000) )
 	WITH a AS (
 		SELECT 
 		 _arrayval AS t1,
