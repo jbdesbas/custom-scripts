@@ -1,3 +1,5 @@
+----
+
 CREATE FUNCTION public.array_distinct(anyarray)
  RETURNS anyarray
  LANGUAGE sql
@@ -8,6 +10,7 @@ AS $function$
 $function$
 ;
 
+----
 
 CREATE FUNCTION public.array_sort_and_unique(_arrayval anyarray, _arraykey integer[])
  RETURNS anyarray
@@ -36,3 +39,20 @@ AS $function$
 		FROM c;
 $function$
 ;
+
+----
+
+--Cf https://www.postgresql-archive.org/Problem-with-custom-aggregates-and-record-pseudo-type-td5037659.html
+ CREATE AGGREGATE public.array_accum(anyarray) (
+  sfunc = array_cat, 
+  stype = anyarray, 
+  initcond = {}
+);
+COMMENT ON AGGREGATE public.array_accum(anyarray) IS 'Exemple : 
+SELECT array_accum(i) from (values (ARRAY[1,2]), (ARRAY[3,4])) as t(i);
+array_accum
+-------------
+{1,2,3,4}';
+
+----
+ 	
