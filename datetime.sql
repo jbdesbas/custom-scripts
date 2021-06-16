@@ -7,10 +7,10 @@ AS $function$
 --Return NULL si doy_star = doy_stop (impossible de déterminer la période à couvrir)
   BEGIN
     IF doy_start < doy_stop THEN
-      return (SELECT input_date BETWEEN (date_trunc('year',input_date) + (doy_start-1||' days')::INTERVAL)::date 
+      return (input_date BETWEEN (date_trunc('year',input_date) + (doy_start-1||' days')::INTERVAL)::date 
      			AND (date_trunc('year',input_date) + (doy_stop-1||' days')::INTERVAL)::date);
     ELSIF doy_start > doy_stop THEN
-      RETURN (SELECT input_date >= (date_trunc('year',input_date) + (doy_start-1||' days')::INTERVAL)::date
+      RETURN (input_date >= (date_trunc('year',input_date) + (doy_start-1||' days')::INTERVAL)::date
      			OR input_date <= (date_trunc('year',input_date) + (doy_stop-1||' days')::INTERVAL)::date);
     ELSE 
     	RETURN null;
