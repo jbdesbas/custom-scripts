@@ -3,8 +3,8 @@ RETURNS boolean
  LANGUAGE plpgsql
  IMMUTABLE
 AS $function$
---TRUE si la date est situé dans la période entre les deux "days of year". Fonctionne aussi pour les périodes à cheval sur deux années (doy_stop < doy_start)
---Return NULL si doy_star = doy_stop (impossible de déterminer la période à couvrir)
+--TRUE si la date est située dans la période entre les deux "days of year". Fonctionne aussi pour les périodes à cheval sur deux années (doy_stop < doy_start)
+--Return NULL si doy_start = doy_stop (impossible de déterminer la période à couvrir)
   BEGIN
     IF doy_start < doy_stop THEN
       return (input_date BETWEEN (date_trunc('year',input_date) + (doy_start-1||' days')::INTERVAL)::date 
