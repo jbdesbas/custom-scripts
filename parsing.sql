@@ -11,3 +11,10 @@ BEGIN
 END;
 $function$
 ;
+
+
+
+--Supprimer les parentèse et leur contenu
+
+SELECT regexp_replace('Desbas Jean-Baptiste (Pro)', '\s?\(.*?\)\s?', ' ')  
+
