@@ -11,3 +11,44 @@ BEGIN
 END;
 $function$
 ;
+
+
+
+CREATE OR REPLACE FUNCTION remove_parentheses(_input_text TEXT, _typo text[] DEFAULT NULL )
+ RETURNS text
+ LANGUAGE plpgsql
+ IMMUTABLE
+AS $function$
+--JB Desbas, Picardie Nature. 2021-09-07.
+--Supprimer les parenthesis (), brackets [] et braces {} ainsi que leur contenu.
+--_typo (text[]) : liste de delimiteurs à utiliser. Laisser NULL pour tous. Valeurs possibles : 'brackets','[]', 'braces', '{}',  'parentheses', '()' 
+--Pour des raisons techniques, la fonction nettoie aussi les doubles espaces en bout de chaine (trim) et à l'intérieur
+--Supporte les imbrications jusqu'à 3 niveau (niveau1(niveau2(niveau3)))
+DECLARE
+  _text_output text;
+  _invalids_args TEXT[];
+  _typo_possible_values TEXT[] := ARRAY['brackets','[]','parentheses','()','braces','{}'];
+BEGIN
+    _text_output = _input_text;
+
+    SELECT INTO _invalids_args array_agg(a.v) AS invalid_args FROM
+        (SELECT UNNEST(_typo) AS v EXCEPT SELECT unnest(_typo_possible_values) AS v) a; 
+    IF _invalids_args IS NOT NULL 
+        THEN RAISE EXCEPTION 'Invalid arg : %' , _invalids_args 
+                USING HINT = 'please use only ' || _typo_possible_values::text;
+    END IF;
+    
+    IF ARRAY['brackets','[]'] && _typo IS NOT FALSE 
+        THEN _text_output = regexp_replace(_text_output, '\[(?:[^\]\[]|\[(?:[^\]\[]|\[[^\]\[]*\])*\])*\]', ' ', 'g');
+    END IF;
+    IF ARRAY['parentheses','()'] && _typo IS NOT FALSE 
+        THEN _text_output = regexp_replace(_text_output,  '\((?:[^)(]|\((?:[^)(]|\([^)(]*\))*\))*\)' , ' ', 'g');
+    END IF;
+    IF ARRAY['braces','{}'] && _typo IS NOT FALSE 
+    THEN _text_output = regexp_replace(_text_output, '\{(?:[^\}\{]|\{(?:[^\}\{]|\{[^\}\{]*\})*\})*\}' , ' ', 'g');
+    END IF;
+
+    RETURN btrim(regexp_replace(_text_output, '\s+', ' ', 'g'));
+END;
+$function$
+;
