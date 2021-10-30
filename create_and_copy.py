@@ -34,7 +34,7 @@ delimiter = args.delimiter
 
 
 def escaped_full_table_name(t_name, s_name=None):
-    if not s_name or s_name.strip() == '':
+    if s_name is None or s_name.strip() == '':
         return '"{}"'.format(t_name)
     else:
         return '"{}"."{}"'.format(s_name, t_name)
@@ -56,7 +56,7 @@ def create_table_query(csv_file_path, t_name, s_name=None):
 
 
 if __name__ == '__main__':
-    creation_table = create_table_query(csv_file_name, table_name)
+    creation_table = create_table_query(csv_file_name, table_name, schema_name)
 
     cmd = ["psql", connection_string, "--single-transaction"]
     if connection_string is None:
