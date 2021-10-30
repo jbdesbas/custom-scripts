@@ -18,3 +18,27 @@ AS $function$
   END;
 $function$
 ;
+
+
+CREATE OR REPLACE FUNCTION ymd_to_dateminmax(input_year int, input_month int, input_day int )
+RETURNS date[]
+ LANGUAGE plpgsql
+ IMMUTABLE
+AS $function$
+--Transforme 3 champs ANNEE MOIS JOUR en DATE_MIN et DATE_MAX (DATE_MIN = DATE_MAX si les trois sont précisés)
+--Return un array de 2 dates
+  BEGIN
+    IF input_day IS NULL AND input_month IS NOT null THEN
+            RETURN ARRAY[
+                make_date(input_year, input_month, 1),
+                make_date(input_year, input_month, 1) + '1 month'::INTERVAL - '1 day'::interval
+            ];
+    ELSIF input_month IS NULL THEN
+         RETURN ARRAY[make_date(input_year, 1, 1), make_date(input_year, 12, 31)];
+    ELSE 
+       RETURN ARRAY[make_date(input_year, input_month, input_day), make_date(input_year, input_month, input_day)];
+
+    END IF;
+  END;
+$function$
+;
