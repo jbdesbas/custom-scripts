@@ -63,8 +63,9 @@ if __name__ == '__main__':
         del cmd[1]
     sql_command = ["-c", creation_table]  # Creation instruction
     copy_sql = "COPY {} FROM '{}' CSV HEADER DELIMITER '{}';".format(
-        escaped_full_table_name(table_name, schema_name), csv_file_name,
-        delimiter)  # TODO prise en charge correct du schema
+        escaped_full_table_name(table_name, schema_name), 
+        csv_file_name,
+        delimiter) 
 
     if not args.create_only:
         sql_command = sql_command + ["-c", copy_sql]  # Add copy instruction
