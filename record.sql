@@ -16,7 +16,7 @@ IMMUTABLE AS $function$
         diff = '{}'::jsonb;
         FOR e IN SELECT * FROM jsonb_each(jsonb_new) LOOP
             IF NOT jsonb_old @> jsonb_build_object(e.KEY, e.value) THEN   
-                diff = diff || jsonb_build_object(e.KEY, jsonb_build_object('old', jsonb_old->>e.key, 'new', e.value) );
+                diff = diff || jsonb_build_object(e.KEY, jsonb_build_object('old', jsonb_old->e.key, 'new', e.value) );
             END IF; 
         END LOOP;
         RAISE NOTICE 'Diff %', diff;
