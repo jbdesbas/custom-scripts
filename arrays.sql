@@ -5,8 +5,13 @@ CREATE FUNCTION public.array_distinct(anyarray)
  LANGUAGE sql
  IMMUTABLE
 AS $function$
-  """Return an array with no duplicates values """
-  SELECT array_agg(DISTINCT x) FROM unnest($1) t(x);
+  /*Return an array with no duplicates values, preserve order */
+  SELECT array_agg(v ORDER BY k)
+  FROM ( 
+    SELECT DISTINCT ON (v) v,k
+    FROM unnest($1)  with ORDINALITY t(v,k)
+    ORDER BY v,k
+) a;
 $function$
 ;
 
