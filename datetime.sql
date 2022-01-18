@@ -42,3 +42,30 @@ AS $function$
   END;
 $function$
 ;
+
+CREATE OR REPLACE FUNCTION dateminmax_to_ymd(datemin date, datemax date)
+RETURNS TABLE("year" int, "month" int, "day" int)
+ LANGUAGE plpgsql
+ IMMUTABLE
+AS $function$
+/* Inverse de la fonction ymd_to_dateminmax. Utilisée pour transformer deux colonnes date (date_min et date_max) en 3 colonnes year|month|day, dont la valeur
+est NULL en cas d'imprécision. Si les année diffèrent, les trois valeurs sont nulles.
+Exemple : 
+ - SELECT (dateminmax_to_ymd(mymindate,mymaxdate))."year", (dateminmax_to_ymd(mymindate,mymaxdate))."month", (dateminmax_to_ymd(mymindate,mymaxdate))."day"
+ - SELECT (dateminmax_to_ymd(mymindate,mymaxdate)).*
+ 
+ TODO : L'écriture de la fonction peut probablement être améliorée/factorisée.
+*/
+    BEGIN
+        IF datemin::date = datemax::date THEN 
+            RETURN QUERY (SELECT date_part('year', datemin)::int , date_part('month', datemin)::int, date_part('day', datemin)::int);
+        ELSIF date_part('year', datemin::date) != date_part('year', datemax::date) THEN
+            RETURN QUERY (SELECT NULL::int,NULL::int,NULL::int );
+        ELSIF date_part('month', datemin::date) != date_part('month', datemax::date) THEN
+            RETURN QUERY (SELECT date_part('year', datemin)::int,  NULL::int, NULL::int);    
+        ELSE 
+            RETURN QUERY (SELECT date_part('year', datemin)::int, date_part('month', datemin)::int, NULL::int); 
+        END IF;
+  END;
+$function$
+;
