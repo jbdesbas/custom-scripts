@@ -139,5 +139,6 @@ BEGIN
     RETURN TRUE;
 END;
 $function$;
+--CREATE DOMAIN orcid AS text CHECK(orcid_is_valid(VALUE));
 
 
