@@ -102,3 +102,42 @@ CREATE OR REPLACE FUNCTION entity2char(t text)
 	end;
 	$function$
 ;
+
+
+CREATE OR REPLACE FUNCTION orcid_is_valid(_string text)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ IMMUTABLE
+AS $function$
+DECLARE el TEXT;
+DECLARE checksum int;
+DECLARE checksum_s TEXT;
+BEGIN
+    checksum = 0;
+    IF _string IS NULL THEN 
+        RETURN NULL; 
+    END IF;
+    IF _string ~ '^[0-9]{15}[0-9|X]$' IS NOT TRUE THEN 
+        RAISE NOTICE '% is not a valid ORCID. Must be a 16 digits number', _string;
+        RETURN FALSE;
+    END IF;
+
+    /**Checksum calculation**/
+    FOREACH el IN ARRAY regexp_split_to_array(LEFT(_string,15), '')
+    LOOP
+        checksum = (el::int + checksum)*2;
+    END LOOP;
+    checksum = 12 - (checksum % 11) % 11;
+    IF checksum = 10 THEN checksum_s = 'X'; --MAP 10 TO X
+    ELSE checksum_s = checksum::int;
+    END IF;
+
+    IF checksum_s != right(_string,1) THEN 
+        RAISE NOTICE 'Invalid checksum for ORCID %',_string;
+        RETURN FALSE;
+    END IF;
+    RETURN TRUE;
+END;
+$function$;
+
+

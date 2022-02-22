@@ -18,6 +18,7 @@ Custom SQL functions or scripts
 - `transform_ff_username`
 - `remove_parentheses`
 - `entity2char`
+- `orcid_is_valid`
 
 ### Records
 - `rows_diff_jsonb`
