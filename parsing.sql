@@ -142,3 +142,14 @@ $function$;
 --CREATE DOMAIN orcid AS text CHECK(orcid_is_valid(VALUE));
 
 
+
+CREATE OR REPLACE FUNCTION int_or_null(_myinput text)
+    RETURNS int
+    LANGUAGE SQL
+    IMMUTABLE
+AS $function$
+    --Jean-Baptiste DESBAS. 2022-04-07
+    --Retourne un INTEGER celui-ci peut être casté, sinon retourne NULL.
+    SELECT CASE WHEN (btrim(_myinput::TEXT) ~ '^\d+$'::text) IS NOT TRUE THEN NULL::integer ELSE _myinput::integer END;
+$function$;
+
