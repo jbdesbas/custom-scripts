@@ -110,15 +110,13 @@ CREATE OR REPLACE FUNCTION orcid_is_valid(_string text)
  RETURNS boolean
  LANGUAGE plpgsql
  IMMUTABLE
+ STRICT
 AS $function$
 DECLARE el TEXT;
 DECLARE checksum int;
 DECLARE checksum_s TEXT;
 BEGIN
     checksum = 0;
-    IF _string IS NULL THEN 
-        RETURN NULL; 
-    END IF;
     IF _string ~ '^[0-9]{15}[0-9|X]$' IS NOT TRUE THEN 
         RAISE NOTICE '% is not a valid ORCID. Must be a 16 digits number', _string;
         RETURN FALSE;
