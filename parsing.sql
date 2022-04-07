@@ -2,6 +2,7 @@ CREATE OR REPLACE FUNCTION gn_imports.transform_ff_username(username text)
  RETURNS text
  LANGUAGE plpgsql
  IMMUTABLE
+ STRICT
 AS $function$
 --JB Desbas, Picardie Nature. 2020-12-15. Permet de transformer les noms FF (Prénom Nom)
 -- en noms "SINP" (NOM Prénom). Gèere aussi les "Machine et Machine Dupont" ou "Machin & Machine Dupont"
@@ -57,6 +58,7 @@ CREATE OR REPLACE FUNCTION entity2char(t text)
  RETURNS text
  LANGUAGE plpgsql
  IMMUTABLE 
+ STRICT
 	AS $function$
 	-- Jean-Baptiste DESBAS, Picardie Nature. 2021-11-16
 	-- Permet de décoder les codes accent HTML (ex :  "&Agrave;"), présents au sein d'un texte, en charactères
@@ -147,6 +149,7 @@ CREATE OR REPLACE FUNCTION int_or_null(_myinput text)
     RETURNS int
     LANGUAGE SQL
     IMMUTABLE
+    STRICT
 AS $function$
     --Jean-Baptiste DESBAS. 2022-04-07
     --Retourne un INTEGER celui-ci peut être casté, sinon retourne NULL.
