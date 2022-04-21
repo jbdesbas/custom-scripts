@@ -23,3 +23,7 @@ Custom SQL functions or scripts
 
 ### Records
 - `rows_diff_jsonb`
+
+### Remote
+- `http_get`
+
