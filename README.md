@@ -27,3 +27,6 @@ Custom SQL functions or scripts
 ### Remote
 - `http_get`
 
+### Geometries
+- `ST_intersection_if_not_null`
+
