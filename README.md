@@ -20,6 +20,7 @@ Custom SQL functions or scripts
 - `entity2char`
 - `orcid_is_valid`
 - `int_or_null`
+- `uuid_or_null`
 
 ### Records
 - `rows_diff_jsonb`

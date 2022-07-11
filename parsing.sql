@@ -154,3 +154,19 @@ AS $function$
     SELECT CASE WHEN (btrim(_myinput::TEXT) ~ '^\d+$'::text) IS NOT TRUE THEN NULL::integer ELSE _myinput::integer END;
 $function$;
 
+
+CREATE OR REPLACE FUNCTION uuid_or_null(str text)
+RETURNS uuid
+LANGUAGE plpgsql 
+IMMUTABLE 
+STRICT
+AS $$
+   --https://stackoverflow.com/a/46433640/10995624
+   --Add IMMUTABLE STRICT
+BEGIN
+  RETURN str::uuid;
+EXCEPTION WHEN invalid_text_representation THEN
+  RETURN NULL;
+END;
+$$;
+
