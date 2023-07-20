@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION dataviz(_tbl regclass)
-RETURNS TEXT 
+RETURNS jsonb 
 LANGUAGE plpgsql
 AS 
 $$
