@@ -20,10 +20,8 @@ BEGIN
 	FOR s IN EXECUTE(FORMAT('SELECT DISTINCT serie, stack FROM %I', _tbl) )
 	LOOP
 		jsdata = '[]'::jsonb;
-		RAISE INFO '%', (FORMAT('SELECT x, y, serie FROM %I WHERE serie=%L ORDER BY x', _tbl, s.serie) );
 		FOR e IN EXECUTE(FORMAT('SELECT x, y, serie FROM %I WHERE serie=%L ORDER BY x', _tbl, s.serie) )
 		LOOP
-			RAISE INFO '%', e; 
 			jsdata = jsdata || jsonb_build_array(jsonb_build_array(e.x, e.y));
 		END LOOP;
 		js_serie = jsonb_build_object('name',s.serie, 'stack', s.stack, 'type', 'bar', 'data', jsdata);
