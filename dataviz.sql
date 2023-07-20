@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default '{"type":"time"}', yaxis jsonb default '{"type":"value"}')
+CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default '{"type":"time"}', yaxis jsonb default '{"type":"value"}', legend jsonb DEFAULT '{"top":"bottom"}', title jsonb DEFAULT '{}')
 RETURNS jsonb 
 LANGUAGE plpgsql
 AS 
@@ -28,6 +28,10 @@ BEGIN
 		js_series_array = js_series_array || js_serie;
 	END LOOP;
 	opt = jsonb_build_object(
+	'title',
+		title,
+	'legend',
+		legend,
 	'xAxis', 
 		xaxis,
 	'yAxis',
