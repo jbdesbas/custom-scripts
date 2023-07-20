@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default '{"type":"time"}', yaxis jsonb default '{"type":"value"}', legend jsonb DEFAULT '{"top":"bottom"}', title jsonb DEFAULT '{}')
+CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default '{"type":"time"}', yaxis jsonb default '{"type":"value"}', legend jsonb DEFAULT '{"top":"bottom"}', title jsonb DEFAULT '{}', tooltip jsonb DEFAULT '{}')
 RETURNS jsonb 
 LANGUAGE plpgsql
 AS 
@@ -32,6 +32,8 @@ BEGIN
 		title,
 	'legend',
 		legend,
+	'tooltip',
+		tooltip,
 	'xAxis', 
 		xaxis,
 	'yAxis',
@@ -41,4 +43,3 @@ BEGIN
 	 RETURN opt;
 END;
 $$;
-
