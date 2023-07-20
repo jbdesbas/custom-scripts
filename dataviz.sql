@@ -7,16 +7,15 @@ $$
 -- Passer en argument le nom d'une table (ou vue ou table temporaire)
 -- La table doit avoir un champs x et y
 -- TODO plusieurs séries, différentes options de graphiques (type de représentation, stack ou non)
--- TODO créer une page complète (avec balises html, import lib, etc)
 DECLARE myout TEXT;
 DECLARE opt jsonb;
 DECLARE jsdata jsonb;
 e record;
 BEGIN	
 	jsdata = '[]'::jsonb;
-	FOR e IN EXECUTE(FORMAT('SELECT x, y FROM %I', _tbl) )
+	FOR e IN EXECUTE(FORMAT('SELECT x, y FROM %I ORDER BY x', _tbl) )
 	LOOP
-		jsdata = jsdata || jsonb_build_array(e.x, e.y);
+		jsdata = jsdata || jsonb_build_array(jsonb_build_array(e.x, e.y));
 	END LOOP;
 	
 	opt = jsonb_build_object(
