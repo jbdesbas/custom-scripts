@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default NULL, yaxis jsonb default '{"type":"value"}', legend jsonb DEFAULT '{"top":"bottom"}', title jsonb DEFAULT '{}', tooltip jsonb DEFAULT '{}')
+CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default NULL, yaxis jsonb default NULL, legend jsonb DEFAULT '{"top":"bottom"}', title jsonb DEFAULT '{}', tooltip jsonb DEFAULT '{}')
 RETURNS jsonb 
 LANGUAGE plpgsql
 AS 
@@ -28,6 +28,13 @@ BEGIN
 		IF xtype IN ('smallint', 'integer', 'bigint', 'numeric', 'real', 'double precision') THEN xaxis:='{"type":"value"}';
 		ELSIF  xtype IN ('timestamp', 'timestamptz', 'date') THEN xaxis:='{"type":"time"}';
 		ELSE xaxis:='{"type":"category"}';
+		END IF;
+	END IF;
+
+	IF yaxis IS NULL THEN -- Auto
+		IF ytype IN ('smallint', 'integer', 'bigint', 'numeric', 'real', 'double precision') THEN yaxis:='{"type":"value"}';
+		ELSIF  ytype IN ('timestamp', 'timestamptz', 'date') THEN yaxis:='{"type":"time"}';
+		ELSE yaxis:='{"type":"category"}';
 		END IF;
 	END IF;
 	
@@ -61,6 +68,7 @@ BEGIN
 	 RETURN opt;
 END;
 $$;
+
 
 CREATE OR REPLACE FUNCTION dataviz_page(charts_opt_arr _jsonb)
 RETURNS text 
