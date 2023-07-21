@@ -15,6 +15,7 @@ DECLARE js_serie jsonb;
 e record;
 s record;
 BEGIN	
+	DISCARD PLANS; -- Pour éviter les erreurs si on utilise plusieurs fois la fonction avec le même nom de table mais des datatypes différents (table temporaire par ex)
 	--TODO ajouter les colonnes manquantes avec un NATURAL FULL JOIN
 	js_series_array = '[]'::jsonb;
 	FOR s IN EXECUTE(FORMAT('SELECT DISTINCT ON(serie) serie, stack, type FROM %I', _tbl) )
