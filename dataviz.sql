@@ -14,16 +14,21 @@ DECLARE js_series_array jsonb;
 DECLARE js_serie jsonb;
 e record;
 s record;
+xtype TEXT;
+ytype TEXT;
 BEGIN	
 	DISCARD PLANS; -- Pour éviter les erreurs si on utilise plusieurs fois la fonction avec le même nom de table mais des datatypes différents (table temporaire par ex)
+	
 	--TODO ajouter les colonnes manquantes avec un NATURAL FULL JOIN
 	js_series_array = '[]'::jsonb;
 	FOR s IN EXECUTE(FORMAT('SELECT DISTINCT ON(serie) serie, stack, type FROM %I', _tbl) )
 	LOOP
 		jsdata = '[]'::jsonb;
-		FOR e IN EXECUTE(FORMAT('SELECT x, y, serie FROM %I WHERE serie=%L ORDER BY x', _tbl, s.serie) )
+		FOR e IN EXECUTE(FORMAT('SELECT x, y FROM %I WHERE serie=%L and type=%L ORDER BY x', _tbl, s.serie, s."type") )
 		LOOP
-			jsdata = jsdata || jsonb_build_array(jsonb_build_array(e.x, e.y));
+			IF s."type" = 'pie' THEN jsdata =  jsdata || jsonb_build_object('name', e.x, 'value', e.y );
+			ELSE jsdata = jsdata || jsonb_build_array(jsonb_build_array(e.x, e.y));
+			END IF;
 		END LOOP;
 		js_serie = jsonb_build_object('name',s.serie, 'stack', s.stack, 'type', s."type", 'data', jsdata);
 		js_series_array = js_series_array || js_serie;
