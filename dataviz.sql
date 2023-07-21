@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default '{"type":"time"}', yaxis jsonb default '{"type":"value"}', legend jsonb DEFAULT '{"top":"bottom"}', title jsonb DEFAULT '{}', tooltip jsonb DEFAULT '{}')
+CREATE OR REPLACE FUNCTION dataviz(_tbl regclass, xaxis jsonb default NULL, yaxis jsonb default '{"type":"value"}', legend jsonb DEFAULT '{"top":"bottom"}', title jsonb DEFAULT '{}', tooltip jsonb DEFAULT '{}')
 RETURNS jsonb 
 LANGUAGE plpgsql
 AS 
@@ -18,6 +18,18 @@ xtype TEXT;
 ytype TEXT;
 BEGIN	
 	DISCARD PLANS; -- Pour éviter les erreurs si on utilise plusieurs fois la fonction avec le même nom de table mais des datatypes différents (table temporaire par ex)
+
+	EXECUTE FORMAT('SELECT pg_typeof(x)::text FROM  %I LIMIT 1',  _tbl) INTO xtype;
+	EXECUTE FORMAT('SELECT pg_typeof(y)::text FROM  %I LIMIT 1',  _tbl) INTO ytype;
+
+	--Paramètre auto des axes selon les datatype des données et les types de graphique
+	
+	IF xaxis IS NULL THEN -- Auto
+		IF xtype IN ('smallint', 'integer', 'bigint', 'numeric', 'real', 'double precision') THEN xaxis:='{"type":"value"}';
+		ELSIF  xtype IN ('timestamp', 'timestamptz', 'date') THEN xaxis:='{"type":"time"}';
+		ELSE xaxis:='{"type":"category"}';
+		END IF;
+	END IF;
 	
 	--TODO ajouter les colonnes manquantes avec un NATURAL FULL JOIN
 	js_series_array = '[]'::jsonb;
